@@ -28,7 +28,7 @@ class Hackpad(object):
     api_link = 'pad/%s/content' % padId
     if revision != '':
       api_link += revision
-    api_link += '.%s' % format
+    api_link += '.%s' % response_format
     params = {}
     if asUser != '':
       params['asUser'] = asUser
@@ -115,6 +115,7 @@ class Hackpad(object):
     return self.do_api_request(api_link, 'GET')
 
   def do_api_request(self, path, method, post_data={}, body='', content_type='text/plain'):
+    method = method.upper()
     hackpad = {}
     try:
       api_method = urljoin('https://%s.hackpad.com/api/1.0/' % self.sub_domain, path)
@@ -127,7 +128,7 @@ class Hackpad(object):
         params[key] = post_data[key]
       consumer = oauth2.Consumer(self.consumer_key, self.consumer_secret)
       params['oauth_consumer_key'] = consumer.key
-      req = oauth2.Request(method='GET', url=api_method, parameters=params)
+      req = oauth2.Request(method=method, url=api_method, parameters=params)
       signature_method = oauth2.SignatureMethod_HMAC_SHA1()
       req.sign_request(signature_method, consumer, None)
       api_link = req.to_url()
@@ -138,7 +139,7 @@ class Hackpad(object):
           headers={'Content-Type': content_type},
           verify=False
         )
-        hackpad = r.json
+        hackpad = r.json()
       else:
         if len(post_data.keys()) > 0:
           r = requests.get(
@@ -153,7 +154,10 @@ class Hackpad(object):
             headers={'Content-Type': 'text/plain'},
             verify=False
           )
-        hackpad = r.json
+        try:
+            hackpad = r.json()
+        except:
+            hackpad = r.content
     except:
       print sys.exc_info()[0]
 
