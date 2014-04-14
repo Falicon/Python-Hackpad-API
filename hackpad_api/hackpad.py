@@ -17,12 +17,16 @@ class Hackpad(object):
     self.consumer_secret = consumer_secret
     return
 
-  def create_new_hackpad(self, asUser='', content_type='text/plain'):
+  def create_blank_hackpad(self, asUser='', content_type='text/plain'):
+    return create_hackpad('Hackpad Title', 'Auto-generated Hackpad contents.', 
+                            asUser, content_type)
+
+  def create_hackpad(self, title, content, asUser='', content_type='text/plain'):
     api_link = 'pad/create'
     params = {}
     if asUser != '':
       params['asUser'] = asUser
-    return self.do_api_request(api_link, 'POST', params, 'Hackpad Title\nHackpad contents.', content_type)
+    return self.do_api_request(api_link, 'POST', params, '%s\n%s' % (title, content), content_type)
 
   def get_pad_content(self, padId, revision='', response_format='txt', asUser=''):
     api_link = 'pad/%s/content' % padId
