@@ -18,7 +18,7 @@ class Hackpad(object):
     return
 
   def create_blank_hackpad(self, asUser='', content_type='text/plain'):
-    return create_hackpad('Hackpad Title', 'Auto-generated Hackpad contents.', 
+    return self.create_hackpad('Hackpad Title', 'Auto-generated Hackpad contents.', 
                             asUser, content_type)
 
   def create_hackpad(self, title, content, asUser='', content_type='text/plain'):
