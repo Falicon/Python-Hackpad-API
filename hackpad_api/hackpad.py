@@ -122,7 +122,11 @@ class Hackpad(object):
     method = method.upper()
     hackpad = {}
     try:
-      api_method = urljoin('https://%s.hackpad.com/api/1.0/' % self.sub_domain, path)
+      if self.sub_domain:
+        api_method = urljoin('https://%s.hackpad.com/api/1.0/' % self.sub_domain, path)
+      else:
+        api_method = urljoin('https://hackpad.com/api/1.0/', path)
+
       params = {
         'oauth_version': "1.0",
         'oauth_nonce': oauth2.generate_nonce(),
