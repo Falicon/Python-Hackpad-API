@@ -3,11 +3,11 @@
  API Documentation: https://hackpad.com/Public-Hackpad-API-Draft-nGhsrCJFlP7
 """
 
-import oauth2
 import requests
 import sys
 import time
 
+from requests_oauthlib import OAuth1Session
 from urlparse import urljoin
 
 class Hackpad(object):
@@ -123,45 +123,27 @@ class Hackpad(object):
     hackpad = {}
     try:
       if self.sub_domain:
-        api_method = urljoin('https://%s.hackpad.com/api/1.0/' % self.sub_domain, path)
+        path = urljoin('https://%s.hackpad.com/api/1.0/' % self.sub_domain, path)
       else:
-        api_method = urljoin('https://hackpad.com/api/1.0/', path)
+        path = urljoin('https://hackpad.com/api/1.0/', path)
 
       params = {
-        'oauth_version': "1.0",
-        'oauth_nonce': oauth2.generate_nonce(),
-        'oauth_timestamp': int(time.time()),
+        'client_key': self.consumer_key,
+        'client_secret': self.consumer_secret
       }
+
       for key in post_data.keys():
         params[key] = post_data[key]
-      consumer = oauth2.Consumer(self.consumer_key, self.consumer_secret)
-      params['oauth_consumer_key'] = consumer.key
-      req = oauth2.Request(method=method, url=api_method, parameters=params)
-      signature_method = oauth2.SignatureMethod_HMAC_SHA1()
-      req.sign_request(signature_method, consumer, None)
-      api_link = req.to_url()
-      if method.lower() == 'post':
-        r = requests.post(
-          api_link,
-          data=body,
-          headers={'Content-Type': content_type},
-          verify=False
-        )
+      
+      hackpad_api = OAuth1Session(**params)
+
+      if method == 'POST':
+
+        r = hackpad_api.post(path, data=body)
         hackpad = r.json()
       else:
-        if len(post_data.keys()) > 0:
-          r = requests.get(
-            api_link,
-            data=post_data,
-            headers={'Content-Type': 'text/plain'},
-            verify=False
-          )
-        else:
-          r = requests.get(
-            api_link,
-            headers={'Content-Type': 'text/plain'},
-            verify=False
-          )
+        r = hackpad_api.get(path)
+
         try:
             hackpad = r.json()
         except:

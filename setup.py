@@ -9,7 +9,7 @@ setup(name='python_hackpad_api',
       install_requires=[
             'argparse==1.2.1',
             'httplib2==0.8',
-            'oauth2==1.5.211',
+            'requests-oauthlib==0.4.2',
             'requests==2.2.1',
             'wsgiref==0.1.2']
       )
