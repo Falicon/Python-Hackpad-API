@@ -28,11 +28,8 @@ class Hackpad(object):
       params['asUser'] = asUser
     return self.do_api_request(api_link, 'POST', params, '%s\n%s' % (title, content), content_type)
 
-  def get_pad_content(self, padId, revision='', response_format='txt', asUser=''):
-    api_link = 'pad/%s/content' % padId
-    if revision != '':
-      api_link += revision
-    api_link += '.%s' % response_format
+  def get_pad_content(self, padId, revision='latest', response_format='txt', asUser=''):
+    api_link = 'pad/%s/content/%s.%s' % (padId, revision, response_format)
     params = {}
     if asUser != '':
       params['asUser'] = asUser
