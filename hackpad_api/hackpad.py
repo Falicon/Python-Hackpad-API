@@ -115,7 +115,7 @@ class Hackpad(object):
     api_link = 'options'
     return self.do_api_request(api_link, 'GET')
 
-  def do_api_request(self, path, method, post_data={}, body='', content_type='text/plain'):
+  def do_api_request(self, path, method, post_data={}, body='', content_type=None):
     method = method.upper()
     hackpad = {}
     try:
@@ -128,6 +128,10 @@ class Hackpad(object):
         'client_key': self.consumer_key,
         'client_secret': self.consumer_secret
       }
+      
+      headers = {}
+      if content_type:
+        headers['content-type'] = content_type
 
       for key in post_data.keys():
         params[key] = post_data[key]
@@ -135,11 +139,10 @@ class Hackpad(object):
       hackpad_api = OAuth1Session(**params)
 
       if method == 'POST':
-
-        r = hackpad_api.post(path, data=body)
+        r = hackpad_api.post(path, data=body, headers=headers)
         hackpad = r.json()
       else:
-        r = hackpad_api.get(path)
+        r = hackpad_api.get(path, headers=headers)
 
         try:
             hackpad = r.json()
